@@ -27,6 +27,12 @@ func mustGetNonNegativeInt(str string) int {
 
 // Among the input lines (in a single string), pick a block of columns specified by the index and return.
 func getColumns(in string, col0, row0, lastCol, lastRow int) string {
+	if lastCol == 0 {
+		lastCol = 4095
+	}
+	if lastRow == 0 {
+		lastRow = 4095
+	}
 	lines := strings.Split(in, "\n")
 	ret := make([]string, 0, lastRow-row0)
 	for row := row0; row < len(lines) && row <= lastRow; row++ {
@@ -50,15 +56,25 @@ func getColumns(in string, col0, row0, lastCol, lastRow int) string {
 }
 
 func main() {
-	if len(os.Args) != 5 {
-		errorExit("Usage: colrow col0 row0 last_col last_row", 1)
+	if len(os.Args) <= 1 {
+		errorExit("Usage: colrow col0 [row0 [last_col [last_row]]]", 1)
 		return
 	}
-	col0 := mustGetNonNegativeInt(os.Args[1])
-	row0 := mustGetNonNegativeInt(os.Args[2])
-	lastCol := mustGetNonNegativeInt(os.Args[3])
-	lastRow := mustGetNonNegativeInt(os.Args[4])
-	if lastCol <= col0 || lastRow <= row0 {
+	var col0, row0, lastCol, lastRow int
+
+	if len(os.Args) >= 2 {
+		col0 = mustGetNonNegativeInt(os.Args[1])
+	}
+	if len(os.Args) >= 3 {
+		row0 = mustGetNonNegativeInt(os.Args[2])
+	}
+	if len(os.Args) >= 4 {
+		lastCol = mustGetNonNegativeInt(os.Args[3])
+	}
+	if len(os.Args) >= 5 {
+		lastRow = mustGetNonNegativeInt(os.Args[4])
+	}
+	if lastCol != 0 && lastCol <= col0 || lastRow != 0 && lastRow <= row0 {
 		errorExit("Last column/row must be greater than first column/row", 1)
 		return
 	}
